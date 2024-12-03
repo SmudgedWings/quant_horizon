@@ -21,8 +21,8 @@ linear_bf16_cuda.linear_forward_bf16(
     torch_input, torch_weight, torch_bias, custom_output
 )
 
-t1 = time.time()
 torch.cuda.synchronize()
+t1 = time.time()
 for k in range(20):
     linear_bf16_cuda.linear_forward_bf16(
         torch_input, torch_weight, torch_bias, custom_output
@@ -37,9 +37,10 @@ torch_linear.weight.data = torch_weight
 if torch_linear.bias is not None:
     torch_linear.bias.data = torch_bias
 
+torch_output = torch_linear(torch_input)
 
-t1 = time.time()
 torch.cuda.synchronize()
+t1 = time.time()
 torch_output = torch_linear(torch_input)
 for k in range(20):
     torch_output = torch_linear(torch_input)
