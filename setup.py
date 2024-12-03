@@ -30,6 +30,14 @@ setup(
             sources=["float/bf16.cu"],
             extra_compile_args=extra_compile_args,
         ),
+        CUDAExtension(
+            name="marlin_cuda",
+            sources=[
+                "w4a16/marlin/marlin_cuda.cpp",
+                "w4a16/marlin/marlin_cuda_kernel.cu",
+            ],
+            extra_compile_args=extra_compile_args,
+        ),
     ],
     cmdclass={"build_ext": BuildExtension},
 )
