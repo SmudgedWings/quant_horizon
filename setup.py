@@ -22,12 +22,12 @@ setup(
     ext_modules=[
         CUDAExtension(
             name="linear_fp16_cuda",
-            sources=["float/fp16.cu"],
+            sources=["fp_bf/fp16.cu"],
             extra_compile_args=extra_compile_args,
         ),
         CUDAExtension(
             name="linear_bf16_cuda",
-            sources=["float/bf16.cu"],
+            sources=["fp_bf/bf16.cu"],
             extra_compile_args=extra_compile_args,
         ),
         CUDAExtension(
