@@ -10,12 +10,14 @@ dtype = torch.bfloat16
 torch.manual_seed(42)
 
 
-torch_input = torch.randn(batch_size, input_size, dtype=dtype, device='cuda')
-torch_weight = torch.randn(output_size, input_size, dtype=dtype, device='cuda')
-torch_bias = torch.randn(output_size, dtype=dtype, device='cuda')
+torch_input = torch.randn(batch_size, input_size, dtype=dtype, device="cuda")
+torch_weight = torch.randn(output_size, input_size, dtype=dtype, device="cuda")
+torch_bias = torch.randn(output_size, dtype=dtype, device="cuda")
 
-custom_output = torch.empty((batch_size, output_size), dtype=dtype, device='cuda')
-linear_bf16_cuda.linear_forward_bf16(torch_input, torch_weight, torch_bias, custom_output)
+custom_output = torch.empty((batch_size, output_size), dtype=dtype, device="cuda")
+linear_bf16_cuda.linear_forward_bf16(
+    torch_input, torch_weight, torch_bias, custom_output
+)
 
 torch_linear = torch.nn.Linear(input_size, output_size, bias=True).cuda().half()
 torch_linear.weight.data = torch_weight

@@ -1,4 +1,3 @@
-import argparse
 from loguru import logger
 from transformers import AutoConfig
 
@@ -66,6 +65,8 @@ def get_mm_size(linear_size, bs, seqlen):
 
 
 if __name__ == "__main__":
+    import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str)
     parser.add_argument("--tp", type=int)
