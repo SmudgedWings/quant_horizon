@@ -22,19 +22,27 @@ setup(
     ext_modules=[
         CUDAExtension(
             name="linear_fp16_cuda",
-            sources=["fp_bf/fp16.cu"],
+            sources=["kernels/fp_bf/fp16.cu"],
             extra_compile_args=extra_compile_args,
         ),
         CUDAExtension(
             name="linear_bf16_cuda",
-            sources=["fp_bf/bf16.cu"],
+            sources=["kernels/fp_bf/bf16.cu"],
             extra_compile_args=extra_compile_args,
         ),
         CUDAExtension(
             name="marlin_cuda",
             sources=[
-                "w4a16/marlin/marlin_cuda.cpp",
-                "w4a16/marlin/marlin_cuda_kernel.cu",
+                "kernels/w4a16/marlin/marlin_cuda.cpp",
+                "kernels/w4a16/marlin/marlin_cuda_kernel.cu",
+            ],
+            extra_compile_args=extra_compile_args,
+        ),
+        CUDAExtension(
+            name="gptq_cuda",
+            sources=[
+                "w3a16/gptq/quant_cuda.cpp",
+                "w3a16/gptq/quant_cuda_kernel.cu",
             ],
             extra_compile_args=extra_compile_args,
         ),
