@@ -13,7 +13,7 @@ To run the benchmark, you need to have the following installed:
 Make sure to install the necessary dependencies using:
 
 ```bash
-python setup.py install
+pip install -v -e.
 ```
 
 ## Usage
