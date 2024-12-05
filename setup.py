@@ -41,8 +41,8 @@ setup(
         CUDAExtension(
             name="gptq_cuda",
             sources=[
-                "w3a16/gptq/quant_cuda.cpp",
-                "w3a16/gptq/quant_cuda_kernel.cu",
+                "kernels/w3a16/gptq/quant_cuda.cpp",
+                "kernels/w3a16/gptq/quant_cuda_kernel.cu",
             ],
             extra_compile_args=extra_compile_args,
         ),
