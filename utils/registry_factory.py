@@ -86,7 +86,7 @@ class BenchRegister(dict):
             init_params[name] = [(None, init_params[name])]
         for tag, init_param in init_params[name]:
             kernel_init_params = init_params["default"] | init_param
-            kernel_tag = name + ' + ' + tag if tag else name
+            kernel_tag = name + " + " + tag if tag else name
             self.benchmark_func(name, kernel_init_params, kernel_tag)
 
     @torch.no_grad()

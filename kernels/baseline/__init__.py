@@ -9,8 +9,10 @@ def init_torch_linear(A_shape, B_shape, A_data, B_data):
     torch_linear.weight.data = B_data
     return {"A_data": A_data, "torch_linear": torch_linear}
 
+
 def run_torch_linear(A_data, torch_linear):
     torch_linear(A_data)
+
 
 BENCH_REGISTRY.register("torch_linear", run_torch_linear, init_torch_linear)
 

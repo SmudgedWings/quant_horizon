@@ -3,15 +3,16 @@ import torch
 import torch.nn as nn
 import gptq_cuda
 
-class GPTQLinear(nn.Module): 
+
+class GPTQLinear(nn.Module):
 
     def __init__(self, infeatures, outfeatures, faster=False):
         super().__init__()
-        self.register_buffer('zeros', torch.zeros((outfeatures, 1)))
-        self.register_buffer('scales', torch.zeros((outfeatures, 1)))
-        self.register_buffer('bias', torch.zeros(outfeatures))
+        self.register_buffer("zeros", torch.zeros((outfeatures, 1)))
+        self.register_buffer("scales", torch.zeros((outfeatures, 1)))
+        self.register_buffer("bias", torch.zeros(outfeatures))
         self.register_buffer(
-            'qweight', torch.zeros((infeatures // 32 * 3, outfeatures), dtype=torch.int)
+            "qweight", torch.zeros((infeatures // 32 * 3, outfeatures), dtype=torch.int)
         )
         self.faster = faster
 
@@ -21,7 +22,9 @@ class GPTQLinear(nn.Module):
         if linear.bias is not None:
             self.bias = linear.bias.clone()
 
-        intweight = torch.round((linear.weight.data + self.zeros) / self.scales).to(torch.int)
+        intweight = torch.round((linear.weight.data + self.zeros) / self.scales).to(
+            torch.int
+        )
         intweight = intweight.t().contiguous()
         intweight = intweight.numpy().astype(np.uint32)
         qweight = np.zeros(
@@ -50,7 +53,7 @@ class GPTQLinear(nn.Module):
             row += 1
 
         qweight = qweight.astype(np.int32)
-        self.qweight = torch.from_numpy(qweight) 
+        self.qweight = torch.from_numpy(qweight)
 
     def forward(self, x):
         if x.shape[-1] == x.numel():
@@ -60,10 +63,12 @@ class GPTQLinear(nn.Module):
             dtype = x.dtype
             if self.faster:
                 x = x.half()
-                gptq_cuda.vecquant3matmul_faster(x, self.qweight, y, self.scales, self.zeros)
+                gptq_cuda.vecquant3matmul_faster(
+                    x, self.qweight, y, self.scales, self.zeros
+                )
             else:
                 x = x.float()
                 gptq_cuda.vecquant3matmul(x, self.qweight, y, self.scales, self.zeros)
             y = y.to(dtype)
             return y.reshape(outshape)
-        raise ValueError('Only supports a single token currently.')
+        raise ValueError("Only supports a single token currently.")
