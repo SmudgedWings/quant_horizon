@@ -2,20 +2,20 @@ import time
 import gc
 import torch
 from tabulate import tabulate
+from collections import defaultdict
 
 
 class BenchRegister(dict):
     def __init__(self, *args, **kwargs):
         super(BenchRegister, self).__init__(*args, **kwargs)
         self._dict = {}
-        self._results = {}
+        self._results = defaultdict(dict)
         self._headers = ["Kernel", "Latency/s"]
         self.warmup_iter = kwargs.get("warmup_iter", 2)
         self.bench_iter = kwargs.get("bench_iter", 10)
 
     def register(self, name, kernel_func, init_func):
         self._dict[name] = {"kernel_func": kernel_func, "init_func": init_func}
-        self._results[name] = {}
 
     def __setitem__(self, key, value):
         self._dict[key] = value
@@ -58,9 +58,8 @@ class BenchRegister(dict):
         print(self._results[name])
 
     @torch.no_grad()
-    def benchmark(self, name, init_params):
+    def benchmark_func(self, name, kernel_init_params, kernel_tag):
         kernel = self[name]
-        kernel_init_params = init_params["default"] | init_params[name]
         prepare_params = kernel["init_func"](**kernel_init_params)
 
         kernel_func = kernel["kernel_func"]
@@ -73,7 +72,7 @@ class BenchRegister(dict):
             kernel_func(**prepare_params)
         torch.cuda.synchronize()
         result = (time.time() - tick) / self.warmup_iter
-        self._results[name] = {"Latency/s": result}
+        self._results[kernel_tag] = {"Latency/s": result}
 
         del prepare_params
         gc.collect()
@@ -82,10 +81,19 @@ class BenchRegister(dict):
         time.sleep(1.0)
 
     @torch.no_grad()
+    def benchmark(self, name, init_params):
+        if not isinstance(init_params[name], list):
+            init_params[name] = [(None, init_params[name])]
+        for tag, init_param in init_params[name]:
+            kernel_init_params = init_params["default"] | init_param
+            kernel_tag = name + ' + ' + tag if tag else name
+            self.benchmark_func(name, kernel_init_params, kernel_tag)
+
+    @torch.no_grad()
     def benchmark_all(self, init_params):
         for name in self.keys():
             print(f"{name} bench start.")
-            self.benchmark(name, init_params)
+            self.benchmark(name, init_params.copy())
             print(f"{name} bench end.")
             print()
 
