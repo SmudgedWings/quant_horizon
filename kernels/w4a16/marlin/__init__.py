@@ -177,7 +177,7 @@ BENCH_REGISTRY.register("marlin_quant", run_marlin_quant, init_marlin_quant)
 
 
 if __name__ == "__main__":
-    A_shape = (8192, 4096)
+    A_shape = (16, 4096)
     B_shape = (4096, 4096)
     A_data = torch.randn(A_shape[0], A_shape[1], dtype=torch.float16, device="cuda")
     B_data = torch.randn(B_shape[1], B_shape[0], dtype=torch.float16, device="cuda")
@@ -204,7 +204,7 @@ if __name__ == "__main__":
                     "groupsize": -1,
                     "thread_k": 64,
                     "thread_n": 256,
-                    "sms": -1,
+                    "sms": 108,
                     "max_par": 16,
                 },
             ),
@@ -214,7 +214,7 @@ if __name__ == "__main__":
                     "groupsize": 128,
                     "thread_k": 64,
                     "thread_n": 256,
-                    "sms": -1,
+                    "sms": 108,
                     "max_par": 16,
                 },
             ),

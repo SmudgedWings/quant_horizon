@@ -11,8 +11,8 @@ class BenchRegister(dict):
         self._dict = {}
         self._results = defaultdict(dict)
         self._headers = ["Kernel", "Latency/s"]
-        self.warmup_iter = kwargs.get("warmup_iter", 2)
-        self.bench_iter = kwargs.get("bench_iter", 10)
+        self.warmup_iter = kwargs.get("warmup_iter", 10)
+        self.bench_iter = kwargs.get("bench_iter", 100)
 
     def register(self, name, kernel_func, init_func):
         self._dict[name] = {"kernel_func": kernel_func, "init_func": init_func}
@@ -71,7 +71,7 @@ class BenchRegister(dict):
         for _ in range(self.bench_iter):
             kernel_func(**prepare_params)
         torch.cuda.synchronize()
-        result = (time.time() - tick) / self.warmup_iter
+        result = (time.time() - tick) / self.bench_iter
         self._results[kernel_tag] = {"Latency/s": result}
 
         del prepare_params

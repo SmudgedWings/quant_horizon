@@ -4,7 +4,7 @@ from kernels import *
 
 
 if __name__ == "__main__":
-    A_shape = (8192, 4096)
+    A_shape = (16, 4096)
     B_shape = (4096, 4096)
     A_data = torch.randn(A_shape[0], A_shape[1], dtype=torch.float16, device="cuda")
     B_data = torch.randn(B_shape[1], B_shape[0], dtype=torch.float16, device="cuda")
