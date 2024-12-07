@@ -178,9 +178,9 @@ BENCH_REGISTRY.register("marlin_quant", run_marlin_quant, init_marlin_quant)
 
 if __name__ == "__main__":
     A_shape = (16, 4096)
-    B_shape = (4096, 4096)
+    B_shape = (4096, 11008)
     A_data = torch.randn(A_shape[0], A_shape[1], dtype=torch.float16, device="cuda")
-    B_data = torch.randn(B_shape[1], B_shape[0], dtype=torch.float16, device="cuda")
+    B_data = torch.randn(B_shape[0], B_shape[1], dtype=torch.float16, device="cuda")
 
     init_params = {
         "default": {
