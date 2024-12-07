@@ -45,7 +45,6 @@ class BenchRegister(dict):
                 data.insert(0, k_sublist)
 
     def show_all_results(self):
-        print(self._results)
         data = []
         for name in self._results:
             data.append(
@@ -92,10 +91,7 @@ class BenchRegister(dict):
     @torch.no_grad()
     def benchmark_all(self, init_params):
         for name in self.keys():
-            print(f"{name} bench start.")
             self.benchmark(name, init_params.copy())
-            print(f"{name} bench end.")
-            print()
 
 
 BENCH_REGISTRY = BenchRegister()
