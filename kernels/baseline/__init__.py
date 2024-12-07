@@ -5,7 +5,9 @@ from utils.registry_factory import BENCH_REGISTRY
 def init_torch_linear(A_shape, B_shape, A_data, B_data):
     assert A_shape == A_data.shape
     assert B_shape == B_data.shape
-    torch_linear = torch.nn.Linear(B_shape[0], B_shape[1], bias=False).cuda().to(B_data.dtype)
+    torch_linear = (
+        torch.nn.Linear(B_shape[0], B_shape[1], bias=False).cuda().to(B_data.dtype)
+    )
     torch_linear.weight.data = B_data.t()
     return {"A_data": A_data, "torch_linear": torch_linear}
 
