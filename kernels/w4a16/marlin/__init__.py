@@ -202,9 +202,9 @@ if __name__ == "__main__":
                 "perchannel",
                 {
                     "groupsize": -1,
-                    "thread_k": 64,
-                    "thread_n": 256,
-                    "sms": 108,
+                    "thread_k": -1,
+                    "thread_n": -1,
+                    "sms": 108, # A100=108, A10=72, 3090=82, A6000=84
                     "max_par": 16,
                 },
             ),
@@ -212,9 +212,9 @@ if __name__ == "__main__":
                 "pergroup_g128",
                 {
                     "groupsize": 128,
-                    "thread_k": 64,
-                    "thread_n": 256,
-                    "sms": 108,
+                    "thread_k": -1,
+                    "thread_n": -1,
+                    "sms": 108, # A100=108, A10=72, 3090=82, A6000=84
                     "max_par": 16,
                 },
             ),
