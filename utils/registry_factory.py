@@ -44,6 +44,21 @@ class BenchRegister(dict):
                 k_sublist = data.pop(i)
                 data.insert(0, k_sublist)
 
+    def add_speedup(self, data):
+        if len(data) < 2:
+            return False
+        baseline_latency = data[0][1]
+        if baseline_latency == "-":
+            return False
+        data[0].append(1.00)
+        for row in data[1:]:
+            latency = row[1]
+            if latency == "-":
+                continue
+            speedup = f"{baseline_latency / latency:.2f}"
+            row.append(speedup)
+        return True
+
     def show_all_results(self):
         data = []
         for name in self._results:
@@ -51,7 +66,9 @@ class BenchRegister(dict):
                 [name] + [self._results[name].get(h, "-") for h in self._headers[1:]]
             )
         self.sort_tabulate(data)
-        print(tabulate(data, headers=self._headers, tablefmt="psql", stralign="center"))
+        if self.add_speedup(data):
+            headers = self._headers + ["Speed-Up"]
+        print(tabulate(data, headers=headers, tablefmt="psql", stralign="center"))
 
     def show_result(self, name):
         print(self._results[name])
