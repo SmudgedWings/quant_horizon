@@ -33,7 +33,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from utils.registry_factory import SPEED_REGISTRY
+from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 
 import marlin_cuda_sparse
 
@@ -180,9 +180,9 @@ def pack(k, n, s, w, groupsize=-1, trans=False):
     return q.to(w.device), s.to(w.device), meta.to(w.device)
 
 
-def gen_quant4_NT(m, k, groupsize=-1):
+def gen_quant4_NT(B_data, m, k, groupsize=-1):
     maxq = 2**4 - 1
-    w = torch.randn((m, k), dtype=torch.half, device="cuda")
+    w = B_data
     w = w.t()
     if groupsize != -1:
         w = w.reshape((-1, groupsize, m))
@@ -216,7 +216,7 @@ def init_marlin_sparse_quant(
     assert A_shape == A_data.shape
     assert B_shape == B_data.shape
     B_data_quant_nm, scale, meta = gen_quant4_NT(
-        B_shape[1], B_shape[0], groupsize=groupsize
+        B_data, B_shape[1], B_shape[0], groupsize=groupsize
     )
     Y_data = torch.zeros((A_shape[0], B_shape[1]), dtype=torch.half).cuda()
     workspace = torch.zeros(B_shape[1] // 128 * 16, dtype=torch.int32).cuda()
@@ -260,8 +260,40 @@ def run_marlin_sparse_quant(
     )
 
 
+def get_marlin_sparse_quant_res(
+    A_data,
+    B_data_quant_nm,
+    meta,
+    scale,
+    Y_data,
+    workspace,
+    thread_k,
+    thread_m,
+    sms,
+    max_par,
+):
+    mul_2_4(
+        A_data,
+        B_data_quant_nm,
+        meta,
+        Y_data,
+        scale,
+        workspace,
+        thread_k=thread_k,
+        thread_m=thread_m,
+        sms=sms,
+        max_par=max_par,
+    )
+
+    return Y_data
+
+
 SPEED_REGISTRY.register(
     "marlin_quant_sparse", run_marlin_sparse_quant, init_marlin_sparse_quant
+)
+
+ACC_REGISTRY.register(
+    "marlin_quant_sparse", get_marlin_sparse_quant_res, init_marlin_sparse_quant
 )
 
 
