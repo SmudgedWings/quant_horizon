@@ -3,6 +3,8 @@ from loguru import logger
 from transformers import AutoConfig
 from kernels import *
 from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
+from collections import defaultdict
+
 
 
 def get_linear_size(model_path, tp):
@@ -65,6 +67,14 @@ def get_mm_size(linear_size, bs, seqlen):
             ),
         }
     return return_dict
+
+
+def deduplication(mm_size):
+    mm_size_compact = defaultdict(list)
+    for layer in mm_size:
+        for mode in mm_size[layer]:
+            mm_size_compact[mm_size[layer][mode]].append(layer + "_" + mode)
+    return mm_size_compact
 
 
 def bench_shape(A_shape, B_shape):
@@ -148,16 +158,13 @@ if __name__ == "__main__":
 
     mm_size = get_mm_size(linear_size, bs=args.bs, seqlen=args.seqlen)
     logger.info(f"mm_size : {mm_size}")
+    
+    mm_size_compact = deduplication(mm_size)
+    logger.info(f"mm_size_compact : {mm_size_compact}")
 
-    for layer in mm_size:
-        A_shape, B_shape = mm_size[layer]["prefill"]
+    for AB_shape in mm_size_compact:
+        A_shape, B_shape = AB_shape
         print("*" * 60)
-        print(f"{layer}-prefill: {A_shape} x {B_shape}")
-        bench_shape(A_shape, B_shape)
-        print()
-
-        A_shape, B_shape = mm_size[layer]["decode"]
-        print("*" * 60)
-        print(f"{layer}-decode: {A_shape} x {B_shape}")
+        print(f"{A_shape} x {B_shape} for {mm_size_compact[AB_shape]}")
         bench_shape(A_shape, B_shape)
         print()

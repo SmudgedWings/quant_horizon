@@ -4,6 +4,7 @@ import torch
 from tabulate import tabulate
 from collections import defaultdict
 import torch.nn.functional as F
+from loguru import logger
 
 
 class BenchRegister(dict):
@@ -112,7 +113,10 @@ class BenchRegister(dict):
     def benchmark_all(self, init_params):
         for name in self.keys():
             if name in init_params:
-                self.benchmark(name, init_params.copy())
+                try:
+                    self.benchmark(name, init_params.copy())
+                except Exception as e:
+                    logger.error(f"Kernel {name} has an error: {e}. Skip it.")
 
 
 class SpeedRegister(BenchRegister):
@@ -133,7 +137,7 @@ class AccRegister(BenchRegister):
         flatten_base_res = self.baseline_res.flatten()
 
         cosine_sim = F.cosine_similarity(
-            flatten_res.unsqueeze(0), flatten_base_res.unsqueeze(0)
+            flatten_res.to(torch.float64).unsqueeze(0), flatten_base_res.to(torch.float64).unsqueeze(0)
         ).item()
         return max_diff, cosine_sim
 

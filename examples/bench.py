@@ -1,5 +1,6 @@
 from loguru import logger
 from transformers import AutoConfig
+from collections import defaultdict
 
 
 def get_linear_size(model_path, tp):
@@ -64,6 +65,14 @@ def get_mm_size(linear_size, bs, seqlen):
     return return_dict
 
 
+def deduplication(mm_size):
+    mm_size_compact = defaultdict(list)
+    for layer in mm_size:
+        for mode in mm_size[layer]:
+            mm_size_compact[mm_size[layer][mode]].append(layer + "_" + mode)
+    return mm_size_compact
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -79,3 +88,6 @@ if __name__ == "__main__":
 
     mm_size = get_mm_size(linear_size, bs=args.bs, seqlen=args.seqlen)
     logger.info(f"mm_size : {mm_size}")
+    
+    mm_size_compact = deduplication(mm_size)
+    logger.info(f"mm_size_compact : {mm_size_compact}")

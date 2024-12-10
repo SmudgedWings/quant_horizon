@@ -182,7 +182,7 @@ def pack(k, n, s, w, groupsize=-1, trans=False):
 
 def gen_quant4_NT(B_data, m, k, groupsize=-1):
     maxq = 2**4 - 1
-    w = B_data
+    w = B_data.t()
     w = w.t()
     if groupsize != -1:
         w = w.reshape((-1, groupsize, m))
