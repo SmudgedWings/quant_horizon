@@ -33,7 +33,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from utils.registry_factory import BENCH_REGISTRY
+from utils.registry_factory import SPEED_REGISTRY
 
 import marlin_cuda_sparse
 
@@ -260,7 +260,7 @@ def run_marlin_sparse_quant(
     )
 
 
-BENCH_REGISTRY.register(
+SPEED_REGISTRY.register(
     "marlin_quant_sparse", run_marlin_sparse_quant, init_marlin_sparse_quant
 )
 
@@ -307,6 +307,6 @@ if __name__ == "__main__":
         ],
     }
 
-    BENCH_REGISTRY.benchmark_all(init_params)
+    SPEED_REGISTRY.benchmark_all(init_params)
 
-    BENCH_REGISTRY.show_all_results()
+    SPEED_REGISTRY.show_all_results()

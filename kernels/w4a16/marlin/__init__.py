@@ -16,7 +16,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import marlin_cuda
+import marlin_cuda_quant
 from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 
 
@@ -32,7 +32,7 @@ def mul(A, B, C, s, workspace, thread_k=-1, thread_n=-1, sms=-1, max_par=16):
     @sms: number of SMs to use for the kernel (can usually be left as auto -1)
     @max_par: maximum number of batch 64 problems to solve in parallel for large input sizes
     """
-    marlin_cuda.mul(A, B, C, s, workspace, thread_k, thread_n, sms, max_par)
+    marlin_cuda_quant.mul(A, B, C, s, workspace, thread_k, thread_n, sms, max_par)
 
 
 # Precompute permutations for Marlin weight and scale shuffling
