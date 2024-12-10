@@ -105,9 +105,9 @@ def pack(k, n, s, weight, groupsize=-1):
     return q.to(weight.device), s.to(s.device)
 
 
-def gen_quant4(m, n, groupsize=-1):
+def gen_quant4(B_data, m, n, groupsize=-1):
     maxq = 2**4 - 1
-    w = torch.randn((m, n), dtype=torch.half).cuda()
+    w = B_data
     if groupsize != -1:
         w = w.reshape((-1, groupsize, n))
         w = w.permute(1, 0, 2)
@@ -139,7 +139,7 @@ def init_marlin_quant(
 ):
     assert A_shape == A_data.shape
     assert B_shape == B_data.shape
-    B_data_quant, scale = gen_quant4(B_shape[0], B_shape[1], groupsize=groupsize)
+    B_data_quant, scale = gen_quant4(B_data, B_shape[0], B_shape[1], groupsize=groupsize)
     Y_data = torch.zeros((A_shape[0], B_shape[1]), dtype=torch.half).cuda()
     workspace = torch.zeros(B_shape[1] // 128 * 16).cuda()
     return {
