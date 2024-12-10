@@ -68,6 +68,8 @@ class BenchRegister(dict):
         self.sort_tabulate(data)
         if self.add_speedup(data):
             headers = self._headers + ["Speed-Up"]
+        else:
+            headers = self._headers
         print(tabulate(data, headers=headers, tablefmt="psql", stralign="center"))
 
     def show_result(self, name):

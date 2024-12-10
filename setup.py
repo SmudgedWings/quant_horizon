@@ -31,10 +31,18 @@ setup(
             extra_compile_args=extra_compile_args,
         ),
         CUDAExtension(
-            name="marlin_cuda",
+            name="marlin_cuda_quant",
             sources=[
                 "kernels/w4a16/marlin/marlin_cuda.cpp",
                 "kernels/w4a16/marlin/marlin_cuda_kernel.cu",
+            ],
+            extra_compile_args=extra_compile_args,
+        ),
+        CUDAExtension(
+            name="marlin_cuda_sparse",
+            sources=[
+                "kernels/w4a16_sparse/marlin/marlin_cuda.cpp",
+                "kernels/w4a16_sparse/marlin/marlin_cuda_kernel_nm.cu",
             ],
             extra_compile_args=extra_compile_args,
         ),
