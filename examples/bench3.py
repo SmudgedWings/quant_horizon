@@ -101,6 +101,28 @@ def bench_shape(A_shape, B_shape):
                 },
             ),
         ],
+        "marlin_quant_sparse": [
+            (
+                "perchannel",
+                {
+                    "groupsize": -1,
+                    "thread_k": -1,
+                    "thread_m": -1,
+                    "sms": 108,  # A100=108, A10=72, 3090=82, A6000=84
+                    "max_par": 16,
+                },
+            ),
+            (
+                "pergroup_g128",
+                {
+                    "groupsize": 128,
+                    "thread_k": -1,
+                    "thread_m": -1,
+                    "sms": 108,  # A100=108, A10=72, 3090=82, A6000=84
+                    "max_par": 16,
+                },
+            ),
+        ],
     }
 
     BENCH_REGISTRY.benchmark_all(init_params)
