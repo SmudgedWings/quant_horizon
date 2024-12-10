@@ -3,6 +3,7 @@ import gc
 import torch
 from tabulate import tabulate
 from collections import defaultdict
+import torch.nn.functional as F
 
 
 class BenchRegister(dict):
@@ -68,8 +69,6 @@ class BenchRegister(dict):
         self.sort_tabulate(data)
         if self.add_speedup(data):
             headers = self._headers + ["Speed-Up"]
-        else:
-            headers = self._headers
         print(tabulate(data, headers=headers, tablefmt="psql", stralign="center"))
 
     def show_result(self, name):
@@ -113,4 +112,61 @@ class BenchRegister(dict):
             self.benchmark(name, init_params.copy())
 
 
-BENCH_REGISTRY = BenchRegister()
+class SpeedRegister(BenchRegister):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class AccRegister(BenchRegister):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.baseline_name = "torch_linear"
+
+    def compare_outputs(self, res):
+        diff = torch.abs(self.baseline_res - res)
+        max_diff = torch.max(diff)
+
+        flatten_res = res.flatten()
+        flatten_base_res = self.baseline_res.flatten()
+
+        cosine_sim = F.cosine_similarity(
+            flatten_res.unsqueeze(0), flatten_base_res.unsqueeze(0)
+        ).item()
+        return max_diff, cosine_sim
+
+    @torch.no_grad()
+    def benchmark_func(self, name, kernel_init_params, kernel_tag):
+        kernel = self[name]
+        prepare_params = kernel["init_func"](**kernel_init_params)
+        kernel_func = kernel["kernel_func"]
+        if name == self.baseline_name:
+            self.baseline_res = kernel_func(**prepare_params)
+            self._results[kernel_tag] = {"cosine": 1.0, "max_diff": 0.0}
+        else:
+            res = kernel_func(**prepare_params)
+            max_diff, cosine_sim = self.compare_outputs(res)
+            self._results[kernel_tag] = {"cosine": cosine_sim, "max_diff": max_diff}
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    def show_all_results(self):
+        table_data = []
+        for kernel, metrics in self._results.items():
+            cosine = (
+                f"{metrics['cosine']:.6e}"
+                if not isinstance(metrics["cosine"], float)
+                or not str(metrics["cosine"]).lower() == "nan"
+                else "nan"
+            )
+            max_diff = (
+                f"{metrics['max_diff']:.2f}"
+                if isinstance(metrics["max_diff"], float)
+                else metrics["max_diff"]
+            )
+            table_data.append([kernel, max_diff, cosine])
+        headers = ["Kernel", "max_diff", "cosine"]
+        print(tabulate(table_data, headers=headers, tablefmt="psql", stralign="center"))
+
+
+SPEED_REGISTRY = SpeedRegister()
+ACC_REGISTRY = AccRegister()

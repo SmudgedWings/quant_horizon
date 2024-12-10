@@ -2,7 +2,7 @@ import torch
 from loguru import logger
 from transformers import AutoConfig
 from kernels import *
-from utils.registry_factory import BENCH_REGISTRY
+from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 
 
 def get_linear_size(model_path, tp):
@@ -123,10 +123,14 @@ def bench_shape(A_shape, B_shape):
                 },
             ),
         ],
+        "gptq_quant": [("w3a16_perchannel", {})],
     }
 
-    BENCH_REGISTRY.benchmark_all(init_params)
-    BENCH_REGISTRY.show_all_results()
+    SPEED_REGISTRY.benchmark_all(init_params)
+    SPEED_REGISTRY.show_all_results()
+
+    ACC_REGISTRY.benchmark_all(init_params)
+    ACC_REGISTRY.show_all_results()
 
 
 if __name__ == "__main__":

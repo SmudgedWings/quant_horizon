@@ -16,10 +16,8 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from utils.registry_factory import BENCH_REGISTRY
-
-
-import marlin_cuda_quant
+import marlin_cuda
+from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 
 
 def mul(A, B, C, s, workspace, thread_k=-1, thread_n=-1, sms=-1, max_par=16):
@@ -34,7 +32,7 @@ def mul(A, B, C, s, workspace, thread_k=-1, thread_n=-1, sms=-1, max_par=16):
     @sms: number of SMs to use for the kernel (can usually be left as auto -1)
     @max_par: maximum number of batch 64 problems to solve in parallel for large input sizes
     """
-    marlin_cuda_quant.mul(A, B, C, s, workspace, thread_k, thread_n, sms, max_par)
+    marlin_cuda.mul(A, B, C, s, workspace, thread_k, thread_n, sms, max_par)
 
 
 # Precompute permutations for Marlin weight and scale shuffling
@@ -173,7 +171,26 @@ def run_marlin_quant(
     )
 
 
-BENCH_REGISTRY.register("marlin_quant", run_marlin_quant, init_marlin_quant)
+def get_marlin_quant_res(
+    A_data, B_data_quant, scale, Y_data, workspace, thread_k, thread_n, sms, max_par
+):
+    mul(
+        A_data,
+        B_data_quant,
+        Y_data,
+        scale,
+        workspace,
+        thread_k=thread_k,
+        thread_n=thread_n,
+        sms=sms,
+        max_par=max_par,
+    )
+
+    return Y_data
+
+
+SPEED_REGISTRY.register("marlin_quant", run_marlin_quant, init_marlin_quant)
+ACC_REGISTRY.register("marlin_quant", get_marlin_quant_res, init_marlin_quant)
 
 
 if __name__ == "__main__":
@@ -221,6 +238,8 @@ if __name__ == "__main__":
         ],
     }
 
-    BENCH_REGISTRY.benchmark_all(init_params)
+    SPEED_REGISTRY.benchmark_all(init_params)
+    SPEED_REGISTRY.show_all_results()
 
-    BENCH_REGISTRY.show_all_results()
+    ACC_REGISTRY.benchmark_all(init_params)
+    ACC_REGISTRY.show_all_results()

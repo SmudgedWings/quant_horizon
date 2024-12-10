@@ -1,5 +1,5 @@
 import torch
-from utils.registry_factory import BENCH_REGISTRY
+from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 from kernels import *
 
 
@@ -17,13 +17,6 @@ if __name__ == "__main__":
             "B_data": B_data,
         },
         "torch_linear": {},
-        # "marlin_quant": {
-        #     "groupsize": -1,
-        #     "thread_k": 64,
-        #     "thread_n": 256,
-        #     "sms": -1,
-        #     "max_par": 16,
-        # },
         "marlin_quant": [
             (
                 "perchannel",
@@ -68,9 +61,13 @@ if __name__ == "__main__":
                 },
             ),
         ],
+        "gptq_quant": [("w3a16_perchannel", {})],
     }
 
-    BENCH_REGISTRY.benchmark_all(init_params)
-
     print(f"shape is: {A_shape} x {B_shape}")
-    BENCH_REGISTRY.show_all_results()
+
+    SPEED_REGISTRY.benchmark_all(init_params)
+    SPEED_REGISTRY.show_all_results()
+
+    ACC_REGISTRY.benchmark_all(init_params)
+    ACC_REGISTRY.show_all_results()
