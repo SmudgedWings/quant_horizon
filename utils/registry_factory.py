@@ -109,7 +109,8 @@ class BenchRegister(dict):
     @torch.no_grad()
     def benchmark_all(self, init_params):
         for name in self.keys():
-            self.benchmark(name, init_params.copy())
+            if name in init_params:
+                self.benchmark(name, init_params.copy())
 
 
 class SpeedRegister(BenchRegister):
