@@ -45,6 +45,15 @@ setup(
             ],
             extra_compile_args=extra_compile_args,
         ),
+        CUDAExtension(
+            name="deepseed_cuda",
+            sources=[
+                "kernels/fp6/deepseed/pybind_deepseed.cpp",
+                "kernels/fp6/deepseed/common/linear_kernels_cuda.cu",
+                "kernels/fp6/deepseed/common/linear_kernels.cpp"
+            ],
+            extra_compile_args=extra_compile_args,
+        ),
     ],
     cmdclass={"build_ext": BuildExtension},
 )

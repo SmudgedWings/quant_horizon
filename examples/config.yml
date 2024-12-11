@@ -4,7 +4,7 @@ default:
     A_data: <|placeholder|>
     B_data: <|placeholder|>
 
-torch_linear: null
+torch_matmul: null
 
 marlin_quant:
     - w4a16_perchannel:
@@ -45,3 +45,6 @@ marlin_quant_sparse:
 gptq_quant:
     - w3a16_perchannel: null
 
+deepseed_quant:
+    - fp6_perchannel:
+        split_k: 5
