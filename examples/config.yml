@@ -1,0 +1,46 @@
+default:
+    A_shape: <|placeholder|>
+    B_shape: <|placeholder|>
+    A_data: <|placeholder|>
+    B_data: <|placeholder|>
+
+torch_linear: null
+
+marlin_quant:
+    - perchannel:
+        groupsize: -1
+        thread_k: -1
+        thread_n: -1
+        sms: 108
+        max_par: 16
+    - pergroup_g128:
+        groupsize: 128
+        thread_k: -1
+        thread_n: -1
+        sms: 108
+        max_par: 16
+
+# marlin_quant:
+#     groupsize: -1
+#     thread_k: -1
+#     thread_n: -1
+#     sms: 108
+#     max_par: 16
+
+marlin_quant_sparse:
+    - perchannel:
+        groupsize: -1
+        thread_k: -1
+        thread_m: -1
+        sms: 108
+        max_par: 16
+    - pergroup_g128:
+        groupsize: 128
+        thread_k: -1
+        thread_m: -1
+        sms: 108
+        max_par: 16
+
+gptq_quant:
+    - w3a16_perchannel: null
+

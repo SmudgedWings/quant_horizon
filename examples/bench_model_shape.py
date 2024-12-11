@@ -1,9 +1,11 @@
 import torch
+import yaml
 from loguru import logger
 from transformers import AutoConfig
 from kernels import *
 from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 from collections import defaultdict
+import argparse
 
 
 def get_linear_size(model_path, tp):
@@ -76,64 +78,14 @@ def deduplication(mm_size):
     return mm_size_compact
 
 
-def bench_shape(A_shape, B_shape):
+def bench_shape(A_shape, B_shape, init_params):
     A_data = torch.randn(A_shape[0], A_shape[1], dtype=torch.float16, device="cuda")
     B_data = torch.randn(B_shape[0], B_shape[1], dtype=torch.float16, device="cuda")
 
-    init_params = {
-        "default": {
-            "A_shape": A_shape,
-            "B_shape": B_shape,
-            "A_data": A_data,
-            "B_data": B_data,
-        },
-        "torch_linear": {},
-        "marlin_quant": [
-            (
-                "perchannel",
-                {
-                    "groupsize": -1,
-                    "thread_k": -1,
-                    "thread_n": -1,
-                    "sms": 108,
-                    "max_par": 16,
-                },
-            ),
-            (
-                "pergroup_g128",
-                {
-                    "groupsize": 128,
-                    "thread_k": -1,
-                    "thread_n": -1,
-                    "sms": 108,
-                    "max_par": 16,
-                },
-            ),
-        ],
-        "marlin_quant_sparse": [
-            (
-                "perchannel",
-                {
-                    "groupsize": -1,
-                    "thread_k": -1,
-                    "thread_m": -1,
-                    "sms": 108,  # A100=108, A10=72, 3090=82, A6000=84
-                    "max_par": 16,
-                },
-            ),
-            (
-                "pergroup_g128",
-                {
-                    "groupsize": 128,
-                    "thread_k": -1,
-                    "thread_m": -1,
-                    "sms": 108,  # A100=108, A10=72, 3090=82, A6000=84
-                    "max_par": 16,
-                },
-            ),
-        ],
-        "gptq_quant": [("w3a16_perchannel", {})],
-    }
+    init_params["default"]["A_shape"] = A_shape
+    init_params["default"]["B_shape"] = B_shape
+    init_params["default"]["A_data"] = A_data
+    init_params["default"]["B_data"] = B_data
 
     SPEED_REGISTRY.benchmark_all(init_params)
     SPEED_REGISTRY.show_all_results()
@@ -143,14 +95,17 @@ def bench_shape(A_shape, B_shape):
 
 
 if __name__ == "__main__":
-    import argparse
-
     parser = argparse.ArgumentParser()
+    parser.add_argument("--cfg", type=str, default="config.yml")
     parser.add_argument("--model", type=str)
     parser.add_argument("--tp", type=int)
     parser.add_argument("--bs", type=int)
     parser.add_argument("--seqlen", type=int)
     args = parser.parse_args()
+
+    with open(args.cfg, "r") as file:
+        init_params = yaml.safe_load(file)
+    print(init_params)
 
     linear_size = get_linear_size(args.model, args.tp)
     logger.info(f"linear_size : {linear_size}")
@@ -165,5 +120,5 @@ if __name__ == "__main__":
         A_shape, B_shape = AB_shape
         print("*" * 60)
         print(f"{A_shape} x {B_shape} for {mm_size_compact[AB_shape]}")
-        bench_shape(A_shape, B_shape)
+        bench_shape(A_shape, B_shape, init_params.copy())
         print()

@@ -103,9 +103,12 @@ class BenchRegister(dict):
     @torch.no_grad()
     def benchmark(self, name, init_params):
         if not isinstance(init_params[name], list):
-            init_params[name] = [(None, init_params[name])]
-        for tag, init_param in init_params[name]:
-            kernel_init_params = init_params["default"] | init_param
+            init_params[name] = [{None: init_params[name]}]
+        for init_param in init_params[name]:
+            tag = next(iter(init_param))
+            if init_param[tag] is None:
+                init_param[tag] = {}
+            kernel_init_params = init_params["default"] | init_param[tag]
             kernel_tag = name + " + " + tag if tag else name
             self.benchmark_func(name, kernel_init_params, kernel_tag)
 
