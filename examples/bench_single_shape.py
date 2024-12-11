@@ -12,6 +12,7 @@ if __name__ == "__main__":
     with open(args.cfg, "r") as file:
         init_params = yaml.safe_load(file)
     print(init_params)
+    print()
 
     A_shape = (1, 4096)
     B_shape = (4096, 8192)
@@ -23,6 +24,7 @@ if __name__ == "__main__":
     init_params["default"]["A_data"] = A_data
     init_params["default"]["B_data"] = B_data
 
+    print("*" * 60)
     print(f"shape is: {A_shape} x {B_shape}")
 
     SPEED_REGISTRY.benchmark_all(init_params)
