@@ -21,16 +21,6 @@ setup(
     name="quant_horizon",
     ext_modules=[
         CUDAExtension(
-            name="linear_fp16_cuda",
-            sources=["kernels/fp_bf/fp16.cu"],
-            extra_compile_args=extra_compile_args,
-        ),
-        CUDAExtension(
-            name="linear_bf16_cuda",
-            sources=["kernels/fp_bf/bf16.cu"],
-            extra_compile_args=extra_compile_args,
-        ),
-        CUDAExtension(
             name="marlin_cuda_quant",
             sources=[
                 "kernels/w4a16/marlin/marlin_cuda.cpp",
