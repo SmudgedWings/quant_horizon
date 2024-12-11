@@ -20,6 +20,7 @@ marlin_quant:
         sms: 108
         max_par: 16
 
+# This config is also acceptable.
 # marlin_quant:
 #     groupsize: -1
 #     thread_k: -1
