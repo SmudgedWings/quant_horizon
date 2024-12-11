@@ -1,5 +1,6 @@
 import torch
 import yaml
+from utils.utils import seed_all
 from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 from kernels import *
 import argparse
@@ -13,6 +14,8 @@ if __name__ == "__main__":
         init_params = yaml.safe_load(file)
     print(init_params)
     print()
+
+    seed_all(1024)
 
     A_shape = (1, 4096)
     B_shape = (4096, 8192)

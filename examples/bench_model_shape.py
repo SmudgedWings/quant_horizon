@@ -1,5 +1,6 @@
 import torch
 import yaml
+from utils.utils import seed_all
 from loguru import logger
 from transformers import AutoConfig
 from kernels import *
@@ -106,6 +107,9 @@ if __name__ == "__main__":
     with open(args.cfg, "r") as file:
         init_params = yaml.safe_load(file)
     print(init_params)
+    print()
+
+    seed_all(1024)
 
     linear_size = get_linear_size(args.model, args.tp)
     logger.info(f"linear_size : {linear_size}")
