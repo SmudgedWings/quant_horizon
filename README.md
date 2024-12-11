@@ -28,6 +28,7 @@ docker run --gpus all -itd --ipc=host --name [name]  -v [path]:[path] --entrypoi
 Make sure to install the necessary dependencies using:
 
 ```bash
+cd quant_horizon
 pip install -v -e .
 ```
 
@@ -35,11 +36,13 @@ pip install -v -e .
 
 ### Benchmark a single shape
 ```bash
-python examples/bench_single_shape.py
+cd examples
+python bench_single_shape.py
 ```
 
 ### Benchmark all shapes in the transformer model
 ```bash
+cd examples
 # You just need to put the config.json into the model_path folder.
-python examples/bench_model_shape.py --model [model_path] --tp 1 --bs 1 --seqlen 2048
+python bench_model_shape.py --model [model_path] --tp 1 --bs 1 --seqlen 2048
 ```
