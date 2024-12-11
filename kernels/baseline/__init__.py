@@ -2,21 +2,21 @@ import torch
 from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 
 
-def init_torch_linear(A_shape, B_shape, A_data, B_data):
+def init_torch_matmul(A_shape, B_shape, A_data, B_data):
     return {"A_data": A_data, "B_data": B_data}
 
 
-def run_torch_linear(A_data, B_data):
+def run_torch_matmul(A_data, B_data):
     torch.matmul(A_data, B_data)
 
 
-def get_torch_linear_res(A_data, B_data):
+def get_torch_matmul_res(A_data, B_data):
     Y_data = torch.matmul(A_data, B_data)
     return Y_data.to(A_data.dtype)
 
 
-SPEED_REGISTRY.register("torch_linear", run_torch_linear, init_torch_linear)
-ACC_REGISTRY.register("torch_linear", get_torch_linear_res, init_torch_linear)
+SPEED_REGISTRY.register("torch_matmul", run_torch_matmul, init_torch_matmul)
+ACC_REGISTRY.register("torch_matmul", get_torch_matmul_res, init_torch_matmul)
 
 
 if __name__ == "__main__":
@@ -31,7 +31,7 @@ if __name__ == "__main__":
             "A_data": A_data,
             "B_data": B_data,
         },
-        "torch_linear": {},
+        "torch_matmul": {},
     }
 
     SPEED_REGISTRY.benchmark_all(init_params)

@@ -42,7 +42,7 @@ class BenchRegister(dict):
 
     def sort_tabulate(self, data):
         for i, sublist in enumerate(data):
-            if sublist[0] == "torch_linear":
+            if sublist[0] == "torch_matmul":
                 k_sublist = data.pop(i)
                 data.insert(0, k_sublist)
 
@@ -130,7 +130,7 @@ class SpeedRegister(BenchRegister):
 class AccRegister(BenchRegister):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.baseline_name = "torch_linear"
+        self.baseline_name = "torch_matmul"
 
     def compare_outputs(self, res):
         diff = torch.abs(self.baseline_res - res)
