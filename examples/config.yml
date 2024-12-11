@@ -7,13 +7,13 @@ default:
 torch_linear: null
 
 marlin_quant:
-    - perchannel:
+    - w4a16_perchannel:
         groupsize: -1
         thread_k: -1
         thread_n: -1
         sms: 108
         max_par: 16
-    - pergroup_g128:
+    - w4a16_pergroup_g128:
         groupsize: 128
         thread_k: -1
         thread_n: -1
@@ -28,13 +28,13 @@ marlin_quant:
 #     max_par: 16
 
 marlin_quant_sparse:
-    - perchannel:
+    - w4a16_perchannel_2:4:
         groupsize: -1
         thread_k: -1
         thread_m: -1
         sms: 108
         max_par: 16
-    - pergroup_g128:
+    - w4a16_pergroup_g128_2:4:
         groupsize: 128
         thread_k: -1
         thread_m: -1
