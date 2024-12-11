@@ -1,6 +1,6 @@
 # quant_horizon
 
-`quant_horizon` is a benchmarking framework designed to evaluate the performance of different CUDA kernels and compare them with baseline implementations.
+`quant_horizon` is a benchmarking framework designed to evaluate the performance of different GPU kernels.
 
 ## Prerequisites
 
