@@ -137,7 +137,8 @@ class AccRegister(BenchRegister):
         flatten_base_res = self.baseline_res.flatten()
 
         cosine_sim = F.cosine_similarity(
-            flatten_res.to(torch.float64).unsqueeze(0), flatten_base_res.to(torch.float64).unsqueeze(0)
+            flatten_res.to(torch.float64).unsqueeze(0),
+            flatten_base_res.to(torch.float64).unsqueeze(0),
         ).item()
         return max_diff, cosine_sim
 

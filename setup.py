@@ -19,6 +19,7 @@ extra_compile_args = {
 
 setup(
     name="quant_horizon",
+    version="0.0.1",
     ext_modules=[
         CUDAExtension(
             name="marlin_cuda_quant",

@@ -9,9 +9,7 @@ from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 def pack(weight, scales, zeros):
     zeros = zeros * scales
     scales = scales.clone()
-    intweight = torch.round((weight + zeros) / scales).to(
-        torch.int
-    )
+    intweight = torch.round((weight + zeros) / scales).to(torch.int)
     intweight = intweight.t().contiguous()
     intweight = intweight.numpy().astype(np.uint32)
     qweight = np.zeros(
@@ -48,9 +46,19 @@ def init_gptq_quant(A_shape, B_shape, A_data, B_data):
     quantizer = IntegerQuantizer(bit=3, symmetric=False, granularity="per_channel")
     _, scales, zeros, _, _ = quantizer.get_tensor_qparams(B_data.t())
     weight = quantizer.fake_quant_weight_dynamic(B_data.t())
-    qweight, scales, zeros = pack(weight.cpu(), scales.float().cpu(), zeros.float().cpu())
-    Y_data = torch.zeros((1, B_shape[1]), device=A_data.device, dtype=A_data.dtype).float()
-    return {"A_data": A_data, "B_data_quant": qweight, "Y_data": Y_data, "scales": scales, "zeros": zeros}
+    qweight, scales, zeros = pack(
+        weight.cpu(), scales.float().cpu(), zeros.float().cpu()
+    )
+    Y_data = torch.zeros(
+        (1, B_shape[1]), device=A_data.device, dtype=A_data.dtype
+    ).float()
+    return {
+        "A_data": A_data,
+        "B_data_quant": qweight,
+        "Y_data": Y_data,
+        "scales": scales,
+        "zeros": zeros,
+    }
 
 
 def run_gptq_quant(A_data, B_data_quant, Y_data, scales, zeros):

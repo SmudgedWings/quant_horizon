@@ -6,7 +6,6 @@ from utils.registry_factory import SPEED_REGISTRY, ACC_REGISTRY
 from collections import defaultdict
 
 
-
 def get_linear_size(model_path, tp):
     model_config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
     logger.info(f"model_config : {model_config}")
@@ -158,7 +157,7 @@ if __name__ == "__main__":
 
     mm_size = get_mm_size(linear_size, bs=args.bs, seqlen=args.seqlen)
     logger.info(f"mm_size : {mm_size}")
-    
+
     mm_size_compact = deduplication(mm_size)
     logger.info(f"mm_size_compact : {mm_size_compact}")
 
