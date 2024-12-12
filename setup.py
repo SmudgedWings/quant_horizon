@@ -54,6 +54,13 @@ setup(
             ],
             extra_compile_args=extra_compile_args,
         ),
+        CUDAExtension(
+            name="fp8_cuda",
+            sources=[
+                "kernels/fp8/fp8_cuda_kernel.cu",
+            ],
+            extra_compile_args=extra_compile_args,
+        ),
     ],
     cmdclass={"build_ext": BuildExtension},
 )
