@@ -77,6 +77,26 @@ class BenchRegister(dict):
     def show_result(self, name):
         print(self._results[name])
 
+    def check_run(self, DEVICE_FORBIDDEN, name, tag):
+        cur_dev = torch.cuda.get_device_name(0)
+        if name in DEVICE_FORBIDDEN:
+            if isinstance(DEVICE_FORBIDDEN[name], list):
+                for dev_forb in DEVICE_FORBIDDEN[name]:
+                    if dev_forb in cur_dev:
+                        logger.error(
+                            f"Kernel {name} can not run on {cur_dev}. Skip it."
+                        )
+                        return False
+            elif isinstance(DEVICE_FORBIDDEN[name], dict):
+                if tag in DEVICE_FORBIDDEN[name]:
+                    for dev_forb in DEVICE_FORBIDDEN[name][tag]:
+                        if dev_forb in cur_dev:
+                            logger.error(
+                                f"Kernel {name} {tag} can not run on {cur_dev}. Skip it."
+                            )
+                            return False
+        return True
+
     @torch.no_grad()
     def benchmark_func(self, name, kernel_init_params, kernel_tag):
         kernel = self[name]
@@ -110,7 +130,8 @@ class BenchRegister(dict):
                 init_param[tag] = {}
             kernel_init_params = init_params["default"] | init_param[tag]
             kernel_tag = name + " + " + tag if tag else name
-            self.benchmark_func(name, kernel_init_params, kernel_tag)
+            if self.check_run(init_params["DEVICE_FORBIDDEN"], name, tag):
+                self.benchmark_func(name, kernel_init_params, kernel_tag)
 
     @torch.no_grad()
     def benchmark_all(self, init_params):

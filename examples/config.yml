@@ -1,3 +1,13 @@
+DEVICE_FORBIDDEN:
+    marlin_quant:
+        w4a16_pergroup_g128: [H100, H800]
+    deepseed_quant:
+        fp6_perchannel: [H100, H800]
+    fp8_static: [A100, A800]
+    fp8_dynamic: [A100, A800]
+    fp8_dynamic_per_token: [A100, A800]
+
+
 default:
     A_shape: <|placeholder|>
     B_shape: <|placeholder|>
