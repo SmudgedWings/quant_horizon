@@ -33,7 +33,7 @@ def init_w4a8g128_qoq_quant(A_shape, B_shape, A_data, B_data):
 def run_w4a8g128_qoq_quant(
     qinput, qweight, zeros, s2_scale, s1_scale, quantized_scale_buffer, qkv_proj_act_buffer
 ):
-    qserve_backend_qgemm_w4a8_per_chn.gemm_forward_cuda(
+    qserve_backend_qgemm_w4a8_per_group.gemm_forward_cuda(
         qinput,
         qweight,
         zeros,
