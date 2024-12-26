@@ -64,3 +64,6 @@ gptq_quant:
 deepseed_quant:
     - fp6_perchannel:
         split_k: 5
+
+w4a8_qoq: null
+w4a8g128_qoq: null
